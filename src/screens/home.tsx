@@ -10,6 +10,7 @@ import { useDispatch, useStore, useSelector } from "react-redux";
 import { addPelada } from "../redux/pelada";
 import { FormApi } from "final-form";
 import { ApplicationState } from "../store";
+import { ActionCreator, Action } from "redux";
 
 const data: Pelada[] = [{
   name: "Pelada de Sábado",
@@ -48,7 +49,7 @@ const PeladaCard = ({
     onPress={() => navigation.navigate('pelada', { id: pelada.id, title: pelada.name })}
     style={styles.pelada}
   >
-    <Card.Title title={pelada.name} subtitle={pelada.name + " sub"} />
+    <Card.Title title={pelada.name} subtitle={`Jogadores ${pelada.players.length}`} />
     <Card.Actions>
       <Button>Cancel</Button>
       <Button>Ok</Button>
@@ -58,7 +59,7 @@ const PeladaCard = ({
 
 const PeladaCardEnhanced = withNavigation(PeladaCard)
 
-const FormTextInput = ({
+export const FormTextInput = ({
   input,
   label
 }: {
@@ -72,23 +73,16 @@ const FormTextInput = ({
   />
 )
 
-const NewPeladaForm = () => {
-  const dispatch = useDispatch()
-
+export const NewPeladaForm = ({
+  label,
+  onSubmit
+}: {
+  label: string,
+  onSubmit: any
+}) => {
   return (
     <Form
-      onSubmit={(
-        { name } :
-        { name: string },
-        form
-      ) => {
-        if (name) {
-          dispatch(
-            addPelada(name)
-          )
-          setTimeout(() => form.reset(), 100)
-        }
-      }}
+      onSubmit={onSubmit}
       render={({ handleSubmit }) => (
         <View
           style={{
@@ -99,7 +93,7 @@ const NewPeladaForm = () => {
         >
           <Field
             name='name'
-            label="Nome da pelada"
+            label={label}
             component={FormTextInput}
           />
 
@@ -114,19 +108,6 @@ const NewPeladaForm = () => {
   )
 }
 
-// const NewPeladaForm = () => {
-//   return (
-//     <Form
-//       render={({ handleSubmit }) => (
-//         <Field<string>
-//           name='name'
-//           component={FormTextInput}
-//         />
-//       )}
-//     />
-//   )
-// }
-
 const Home = (): JSX.Element => {
   const peladas: Pelada[] = useSelector(
     useCallback(
@@ -135,10 +116,28 @@ const Home = (): JSX.Element => {
     )
   )
 
+  const dispatch = useDispatch()
+
   return (
     <FlatList<Pelada>
       contentContainerStyle={styles.contentContainerStyle}
-      ListHeaderComponent={NewPeladaForm}
+      ListHeaderComponent={
+        <NewPeladaForm
+          label='Nome da pelada'
+          onSubmit={(
+            { name } :
+            { name: string },
+            form: FormApi
+          ) => {
+            if (name) {
+              dispatch(
+                addPelada(name)
+              )
+              setTimeout(() => form.reset(), 100)
+            }
+          }}
+        />
+      }
       style={styles.homeStyle}
       data={peladas}
       keyExtractor={item => item.id.toString()}
