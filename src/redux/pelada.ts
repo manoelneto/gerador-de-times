@@ -1,12 +1,16 @@
-import Pelada from "../types/Pelada";
 import { Reducer, ActionCreator, Action } from "redux";
 import { AsyncStorage } from "react-native";
 import { tsNamespaceExportDeclaration } from "@babel/types";
-import Player from "../types/Player";
+import { Pelada, Player } from "../types";
+import _ from "lodash";
+import { AddPlayerAction } from "./player";
+import { randId } from "../utils/randId";
 
 export const PeladaKey = 'peladas'
 
-export type PeladaState = Pelada[]
+export type PeladaState = {
+  [key: number]: Pelada
+}
 
 interface InitializePeladaAction extends Action {
   type: '@@pelada/InitializePeladaAction',
@@ -18,17 +22,9 @@ interface AddPeladaAction extends Action {
   payload: Pelada
 }
 
-interface AddPlayerAction extends Action {
-  type: '@@pelada/AddPlayerAction',
-  payload: Player,
-  meta: {
-    peladaId: number
-  }
-}
-
 interface RemovePeladaAction extends Action {
   type: '@@pelada/RemovePeladaAction',
-  payload: Pelada
+  payload: number
 }
 
 interface UpdatePeladaAction extends Action {
@@ -36,9 +32,7 @@ interface UpdatePeladaAction extends Action {
   payload: Pelada
 }
 
-// const initialState = JSON.parse(localStorage.getItem('pelada') || "[]")
-
-const initialState: Pelada[] = []
+const initialState: PeladaState = {}
 
 const peladaReducer: Reducer<PeladaState> = (
   state: PeladaState = initialState,
@@ -49,13 +43,14 @@ const peladaReducer: Reducer<PeladaState> = (
       return (action as InitializePeladaAction).payload
     }
 
-    case '@@pelada/AddPeladaAction': {
+    case '@@pelada/AddPeladaAction':
+    case '@@pelada/UpdatePeladaAction': {
       const pelada = (action as AddPeladaAction).payload
 
-      const newState = [
+      const newState = {
         ...state,
-        pelada
-      ]
+        [pelada.id]: pelada
+      }
 
       AsyncStorage.setItem(PeladaKey, JSON.stringify(newState))
 
@@ -64,45 +59,32 @@ const peladaReducer: Reducer<PeladaState> = (
 
 
     case '@@pelada/RemovePeladaAction': {
-      const pelada = (action as RemovePeladaAction).payload
+      const peladaId = (action as RemovePeladaAction).payload
 
-      const newState = state.filter(_pelada => _pelada.id !== pelada.id)
-
-      AsyncStorage.setItem(PeladaKey, JSON.stringify(newState))
-
-      return newState
-    }
-
-    case '@@pelada/UpdatePeladaAction': {
-      const pelada = (action as UpdatePeladaAction).payload
-
-      const index = state.findIndex(_pelada => _pelada.id === pelada.id)
-
-      const newState = [...state]
-      newState.splice(index, 1, pelada)
+      const newState = _.omit(state, peladaId)
 
       AsyncStorage.setItem(PeladaKey, JSON.stringify(newState))
 
       return newState
     }
 
-    case `@@pelada/AddPlayerAction`: {
-      const player = (action as AddPlayerAction).payload
-      const pelada = state.find(pelada => pelada.id === (action as AddPlayerAction).meta.peladaId)
+    case `@@player/AddPlayerAction`: {
+      const playerId = (action as AddPlayerAction).player.id
+      const pelada = state[(action as AddPlayerAction).peladaId]
 
       if (pelada) {
         const newPelada = {
           ...pelada,
-          players: [
-            ...pelada.players,
-            player
+          player_ids: [
+            ...pelada.player_ids,
+            playerId
           ]
         }
 
-        const index = state.indexOf(pelada)
-
-        const newState = [...state]
-        newState.splice(index, 1, newPelada)
+        const newState = {
+          ...state,
+          [newPelada.id]: newPelada
+        }
 
         AsyncStorage.setItem(PeladaKey, JSON.stringify(newState))
 
@@ -127,33 +109,19 @@ export const addPelada: ActionCreator<AddPeladaAction> = (name: string) => ({
   type: '@@pelada/AddPeladaAction',
   payload: {
     name,
-    id: Math.random() * 999999 + 10,
-    players: []
+    id: randId(),
+    player_ids: []
   }
 }) 
 
-export const removePelada: ActionCreator<RemovePeladaAction> = (pelada: Pelada) => ({
+export const removePelada: ActionCreator<RemovePeladaAction> = (peladaId: number) => ({
   type: '@@pelada/RemovePeladaAction',
-  payload: pelada
+  payload: peladaId
 }) 
 
 export const updatePelada: ActionCreator<UpdatePeladaAction> = (pelada: Pelada) => ({
   type: '@@pelada/UpdatePeladaAction',
   payload: pelada
 }) 
-
-export const addPlayer: ActionCreator<AddPlayerAction> = (peladaId: number, name: string) => ({
-  type: '@@pelada/AddPlayerAction',
-  meta: {
-    peladaId
-  },
-  payload: {
-    name,
-    id: Math.random() * 999999 + 10,
-    type: 'player',
-    stars: 5,
-    availableToPlay: true
-  }
-})
 
 export default peladaReducer

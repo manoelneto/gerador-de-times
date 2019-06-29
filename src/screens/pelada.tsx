@@ -1,15 +1,14 @@
 import _ from 'lodash'
-import { Text, TextInput, Button, Card, List } from 'react-native-paper'
+import { Text, TextInput, Button, Card, List, TouchableRipple } from 'react-native-paper'
 import React, { useCallback, useMemo } from "react";
-import Pelada from "../types/Pelada";
-import Player from "../types/Player";
 import { View, StyleSheet, SectionListData, SectionList } from "react-native";
 import { NavigationScreenProp, NavigationRoute, NavigationParams, withNavigation } from "react-navigation";
 import { useSelector, useDispatch } from "react-redux";
 import { ApplicationState } from "../store";
-import { NewPeladaForm } from './home';
-import { addPlayer } from '../redux/pelada';
+import { NewPeladaForm } from './Home';
 import { FormApi } from 'final-form';
+import { Player, Pelada } from '../types';
+import { addPlayer, setAvailableToPlay } from '../redux/player';
 
 const PeladaScreenHeader = ({
   navigation
@@ -42,23 +41,45 @@ const PeladaScreenHeader = ({
 const PeladaScreenHeaderEnhanced = withNavigation(PeladaScreenHeader)
 
 const PlayerCard = ({
-  player
+  player,
+  navigation
 }: {
-  player: Player
+  player: Player,
+  navigation: NavigationScreenProp<NavigationRoute>
 }) => {
   const dispatch = useDispatch()
 
-  const onPress = useCallback(
+  const toogleAvailableToPlay = useCallback(
     () => {
-      dispatch()    
+      dispatch(setAvailableToPlay(player.id, !player.availableToPlay))
     }, [player]
   )
 
+  const onMorePress = useCallback(() => navigation.navigate('edit_player', {
+    id: player.id
+  }), [])
+  
+  const description = []
+  
+  description.push(`${player.stars} estrelas`)
+
+  if (player.availableToPlay) {
+    description.push(`Disponível para sorteio`)
+  }
+
   return (
     <List.Item
-      onPress={onPress}
+      onPress={toogleAvailableToPlay}
       title={player.name}
       left={(props) => player.availableToPlay && <List.Icon {...props} icon='check' />}
+      right={(props) => (
+        <TouchableRipple
+          onPress={onMorePress}
+        >
+          <List.Icon {...props} icon='more-vert' />
+        </TouchableRipple>
+      )}
+      description={description.join(' - ')}
     />
   )
 }
@@ -73,33 +94,53 @@ const getHumanType = (type: string): string => {
   return ''
 }
 
+const usePelada = (peladaId: number): Pelada | undefined => {
+  const peladaSelector = useCallback((store: ApplicationState) => {
+    return store.pelada[peladaId]
+  }, [])
+
+  return useSelector(peladaSelector)
+}
+
+export const usePlayers = (peladaId: number): Player[] => {
+  const pelada = usePelada(peladaId)
+
+  const playersSelector = useCallback((store: ApplicationState) => {
+    if (!pelada) {
+      return []
+    }
+
+    return pelada.player_ids.map(playerId => store.player[playerId]).filter(player => !!player)
+  }, [pelada])
+
+  return useSelector(playersSelector)
+}
+
 const PeladaScreen = ({
   navigation
 }: {
   navigation: NavigationScreenProp<NavigationRoute<NavigationParams>, NavigationParams>
 }) => {
-  const pelada: Pelada | undefined = useSelector(
-    useCallback((store: ApplicationState) => {
-      return store.pelada.find(_pelada => _pelada.id === navigation.getParam('id'))
-    }, []))
+  const pelada: Pelada | undefined = usePelada(navigation.getParam('id'))
+  const players: Player[] = usePlayers(navigation.getParam('id'))
 
   const playersGroupedByType: SectionListData<Player>[] = useMemo(() => {
-    if (!pelada) {
-      return []
-    }
-
     return _.map(
       _.toPairs(
-        _.groupBy(pelada.players, player => player.type)
+        _.groupBy(players, player => player.type)
       ),
       ([ type, players ]) => ({
         title: getHumanType(type),
         data: players
       })
     )
-  } , [pelada])
+  } , [players])
 
   const dispatch = useDispatch()
+
+  if (!pelada) {
+    return null
+  }
 
   return (
     <SectionList
@@ -111,7 +152,7 @@ const PeladaScreen = ({
             { name: string },
             form: FormApi
           ) => {
-            if (pelada && name) {
+            if (name) {
               dispatch(
                 addPlayer(pelada.id, name)
               )
@@ -135,7 +176,7 @@ const PeladaScreen = ({
           item
         }: {
           item: Player
-        }) => <PlayerCard player={item} />
+        }) => <PlayerCard player={item} navigation={navigation} />
       }
     />
   )

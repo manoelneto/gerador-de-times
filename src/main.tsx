@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import React, {Component, PureComponent} from 'react';
 import { createBottomTabNavigator, createAppContainer, NavigationState } from 'react-navigation';
-import Home from './screens/home';
+import Home from './screens/Home';
 import { createStackNavigator } from 'react-navigation';
 import { Appbar, Drawer, Button, Text, TouchableRipple } from 'react-native-paper';
 import { NavigationParams } from 'react-navigation';
@@ -11,6 +11,7 @@ import Settings from './screens/settings';
 import PeladaScreen from './screens/pelada';
 import { StyleSheet } from 'react-native';
 import TeamsScreen from './screens/teams';
+import EditPlayerScreen from './screens/EditPlayer';
 
 interface HeaderProps {
   scene: any,
@@ -99,12 +100,10 @@ Main.navigationOptions = (
 const MainStack = createStackNavigator({
   main: Main,
   pelada: PeladaScreen,
-  teams: TeamsScreen
+  teams: TeamsScreen,
+  edit_player: EditPlayerScreen
 }, {
   initialRouteName: 'main',
-  initialRouteParams: {
-    id: 1
-  },
   defaultNavigationOptions: ({ navigation }) => {
     const routeName = navigation.state.routeName
     let headerRight : JSX.Element | undefined = undefined

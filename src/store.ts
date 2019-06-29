@@ -1,17 +1,20 @@
 import { createStore, combineReducers, Reducer, Store } from "redux";
 import peladaReducer, { PeladaState, initialize as initializePelada, PeladaKey } from "./redux/pelada";
 import { AsyncStorage } from "react-native";
+import playerReducer, { PlayerKey, initializePlayer, PlayerState } from "./redux/player";
 
 const initialState = {
   
 }
 
 export interface ApplicationState {
-  pelada: PeladaState
+  pelada: PeladaState,
+  player: PlayerState
 }
 
 const reducers: Reducer<ApplicationState> = combineReducers<ApplicationState>({
-  pelada: peladaReducer
+  pelada: peladaReducer,
+  player: playerReducer
 })
 
 const store: Store<ApplicationState> = createStore(
@@ -19,12 +22,15 @@ const store: Store<ApplicationState> = createStore(
   initialState
 )
 
+// AsyncStorage.removeItem(PeladaKey)
+// AsyncStorage.removeItem(PlayerKey)
+
 AsyncStorage.getItem(PeladaKey).then(peladas => {
-  try {
-    store.dispatch(initializePelada(JSON.parse(peladas || '[]')))
-  } catch (error) {
-  }
-  
+  store.dispatch(initializePelada(JSON.parse(peladas || '{}')))
+})
+
+AsyncStorage.getItem(PlayerKey).then(players => {
+  store.dispatch(initializePlayer(JSON.parse(players || '{}')))
 })
 
 
