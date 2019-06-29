@@ -3,7 +3,7 @@ import { AsyncStorage } from "react-native";
 import { tsNamespaceExportDeclaration } from "@babel/types";
 import { Pelada, Player } from "../types";
 import _ from "lodash";
-import { AddPlayerAction } from "./player";
+import { AddPlayerAction, RemovePlayerAction } from "./player";
 import { randId } from "../utils/randId";
 
 export const PeladaKey = 'peladas'
@@ -72,26 +72,41 @@ const peladaReducer: Reducer<PeladaState> = (
       const playerId = (action as AddPlayerAction).player.id
       const pelada = state[(action as AddPlayerAction).peladaId]
 
-      if (pelada) {
-        const newPelada = {
-          ...pelada,
-          player_ids: [
-            ...pelada.player_ids,
-            playerId
-          ]
-        }
-
-        const newState = {
-          ...state,
-          [newPelada.id]: newPelada
-        }
-
-        AsyncStorage.setItem(PeladaKey, JSON.stringify(newState))
-
-        return newState
-      } else {
-        return state
+      const newPelada = {
+        ...pelada,
+        player_ids: [
+          ...pelada.player_ids,
+          playerId
+        ]
       }
+
+      const newState = {
+        ...state,
+        [newPelada.id]: newPelada
+      }
+
+      AsyncStorage.setItem(PeladaKey, JSON.stringify(newState))
+
+      return newState
+    }
+
+    case '@@player/RemovePlayerAction': {
+      const playerId = (action as RemovePlayerAction).playerId
+      const pelada = state[(action as RemovePlayerAction).peladaId]
+
+      const newPelada = {
+        ...pelada,
+        player_ids: _.omit(pelada.player_ids, playerId)
+      }
+
+      const newState = {
+        ...state,
+        [newPelada.id]: newPelada
+      }
+
+      AsyncStorage.setItem(PeladaKey, JSON.stringify(newState))
+
+      return newState
     }
 
     default:

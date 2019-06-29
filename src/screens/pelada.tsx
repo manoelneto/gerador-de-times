@@ -5,7 +5,7 @@ import { View, StyleSheet, SectionListData, SectionList } from "react-native";
 import { NavigationScreenProp, NavigationRoute, NavigationParams, withNavigation } from "react-navigation";
 import { useSelector, useDispatch } from "react-redux";
 import { ApplicationState } from "../store";
-import { NewPeladaForm } from './Home';
+import { NewPeladaForm } from "./NewPeladaForm";
 import { FormApi } from 'final-form';
 import { Player, Pelada } from '../types';
 import { addPlayer, setAvailableToPlay } from '../redux/player';
@@ -56,7 +56,8 @@ const PlayerCard = ({
   )
 
   const onMorePress = useCallback(() => navigation.navigate('edit_player', {
-    id: player.id
+    id: player.id,
+    peladaId: navigation.getParam('id')
   }), [])
   
   const description = []

@@ -1,9 +1,8 @@
 import { Node } from "@babel/core";
-import { View, Text, SafeAreaView, StyleSheet } from "react-native";
+import { Text, SafeAreaView, StyleSheet } from "react-native";
 import React, { useCallback } from "react";
 import { createBottomTabNavigator, FlatList, NavigationScreenProp, NavigationRoute, NavigationParams, withNavigation } from "react-navigation";
-import { Card, Avatar, Title, Paragraph, Button, FAB, TextInput } from "react-native-paper";
-import { Form, Field } from 'react-final-form'
+import { Card, Avatar, Title, Paragraph, Button, FAB } from "react-native-paper";
 import { string } from "prop-types";
 import { useDispatch, useStore, useSelector } from "react-redux";
 import { addPelada } from "../redux/pelada";
@@ -13,6 +12,7 @@ import { ActionCreator, Action } from "redux";
 import { Pelada } from "../types";
 import _ from "lodash";
 import { usePlayers } from "./pelada";
+import { NewPeladaForm } from "./NewPeladaForm";
 
 const PeladaCard = ({
   pelada,
@@ -39,56 +39,7 @@ const PeladaCard = ({
 
 const PeladaCardEnhanced = withNavigation(PeladaCard)
 
-export const FormTextInput = ({
-  input,
-  label
-}: {
-  label?: string
-  input: any
-}) => (
-  <TextInput
-    style={{ flex: 1 }}
-    {...input}
-    label={label}
-  />
-)
-
-export const NewPeladaForm = ({
-  label,
-  onSubmit
-}: {
-  label: string,
-  onSubmit: any
-}) => {
-  return (
-    <Form
-      onSubmit={onSubmit}
-      render={({ handleSubmit }) => (
-        <View
-          style={{
-            flex: 1,
-            flexDirection: 'row',
-            alignItems: 'center'
-          }}
-        >
-          <Field
-            name='name'
-            label={label}
-            component={FormTextInput}
-          />
-
-          <Button
-            onPress={handleSubmit}
-          >
-            Ok
-          </Button>
-        </View>
-      )}
-    />
-  )
-}
-
-const Home = (): JSX.Element => {
+const Home = () => {
   const peladas: Pelada[] = useSelector(
     useCallback(
       (store: ApplicationState) => _.values(store.pelada),

@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import React, {Component, PureComponent} from 'react';
 import { createBottomTabNavigator, createAppContainer, NavigationState } from 'react-navigation';
-import Home from './screens/Home';
+import Home from './screens/home';
 import { createStackNavigator } from 'react-navigation';
 import { Appbar, Drawer, Button, Text, TouchableRipple } from 'react-native-paper';
 import { NavigationParams } from 'react-navigation';

@@ -2,6 +2,8 @@ import { Player } from "../types";
 import { Reducer, Action, ActionCreator } from "redux";
 import { AsyncStorage } from "react-native";
 import { randId } from "../utils/randId";
+import _ from "lodash";
+import pelada from "../screens/pelada";
 
 export const PlayerKey = 'player'
 
@@ -29,6 +31,13 @@ export interface UpdatePlayerAction extends Action {
 export interface InitializePlayerAction extends Action {
   type: '@@player/InitializePlayerAction',
   players: Player[]
+}
+
+
+export interface RemovePlayerAction extends Action {
+  type: '@@player/RemovePlayerAction',
+  playerId: number,
+  peladaId: number
 }
 
 const initialState: PlayerState = {}
@@ -84,6 +93,16 @@ const playerReducer: Reducer<PlayerState> = (
 
       return newState
     }
+
+    case '@@player/RemovePlayerAction': {
+      const playerId = (action as RemovePlayerAction).playerId
+
+      const newState = _.omit(state, playerId)
+
+      AsyncStorage.setItem(PlayerKey, JSON.stringify(newState))
+
+      return newState
+    }
   
     default:
       return state
@@ -116,6 +135,12 @@ export const setAvailableToPlay = (playerId: number, availableToPlay: boolean): 
 export const updatePlayer = (player: Player): UpdatePlayerAction => ({
   type: '@@player/UpdatePlayerAction',
   player
+})
+
+export const removePlayer = (playerId: number, peladaId: number): RemovePlayerAction => ({
+  type: '@@player/RemovePlayerAction',
+  playerId,
+  peladaId
 })
 
 export default playerReducer
