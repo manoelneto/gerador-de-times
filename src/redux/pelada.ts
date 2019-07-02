@@ -1,75 +1,31 @@
-import { Reducer, ActionCreator, Action } from "redux";
+import { Reducer, ActionCreator, Action, compose } from "redux";
 import { AsyncStorage } from "react-native";
 import { tsNamespaceExportDeclaration } from "@babel/types";
 import { Pelada, Player } from "../types";
 import _ from "lodash";
-import { AddPlayerAction, RemovePlayerAction } from "./player";
+import { AddPlayerAction, RemovePlayerAction, addPlayer } from "./player";
 import { randId } from "../utils/randId";
+import { AddAction, RemoveAction, UpdateAction, ResetAction, addReducer, removeReducer, updateReducer, setReducer, State } from "./crud";
+
 
 export const PeladaKey = 'peladas'
 
-export type PeladaState = {
-  [key: number]: Pelada
-}
+export type PeladaState = State<Pelada>
 
-interface InitializePeladaAction extends Action {
-  type: '@@pelada/InitializePeladaAction',
-  payload: Pelada[]
-}
-
-interface AddPeladaAction extends Action {
-  type: '@@pelada/AddPeladaAction',
-  payload: Pelada
-}
-
-interface RemovePeladaAction extends Action {
-  type: '@@pelada/RemovePeladaAction',
-  payload: number
-}
-
-interface UpdatePeladaAction extends Action {
-  type: '@@pelada/UpdatePeladaAction',
-  payload: Pelada
-}
+interface AddPeladaAction extends AddAction<Pelada, '@@pelada/AddPeladaAction'> {}
+interface UpdatePeladaAction extends UpdateAction<Pelada, '@@pelada/UpdatePeladaAction'> {}
+interface RemovePeladaAction extends RemoveAction<'@@pelada/RemovePeladaAction'> {}
+interface SetPeladaAction extends ResetAction<PeladaState, '@@pelada/SetPeladaAction'> {}
 
 const initialState: PeladaState = {}
 
-const peladaReducer: Reducer<PeladaState> = (
+const playerReducer: Reducer<PeladaState> = (
   state: PeladaState = initialState,
   action
 ) => {
   switch (action.type) {
-    case '@@pelada/InitializePeladaAction': {
-      return (action as InitializePeladaAction).payload
-    }
-
-    case '@@pelada/AddPeladaAction':
-    case '@@pelada/UpdatePeladaAction': {
-      const pelada = (action as AddPeladaAction).payload
-
-      const newState = {
-        ...state,
-        [pelada.id]: pelada
-      }
-
-      AsyncStorage.setItem(PeladaKey, JSON.stringify(newState))
-
-      return newState
-    }
-
-
-    case '@@pelada/RemovePeladaAction': {
-      const peladaId = (action as RemovePeladaAction).payload
-
-      const newState = _.omit(state, peladaId)
-
-      AsyncStorage.setItem(PeladaKey, JSON.stringify(newState))
-
-      return newState
-    }
-
     case `@@player/AddPlayerAction`: {
-      const playerId = (action as AddPlayerAction).player.id
+      const playerId = (action as AddPlayerAction).payload.id
       const pelada = state[(action as AddPlayerAction).peladaId]
 
       const newPelada = {
@@ -80,7 +36,7 @@ const peladaReducer: Reducer<PeladaState> = (
         ]
       }
 
-      const newState = {
+      const newState: PeladaState = {
         ...state,
         [newPelada.id]: newPelada
       }
@@ -91,15 +47,15 @@ const peladaReducer: Reducer<PeladaState> = (
     }
 
     case '@@player/RemovePlayerAction': {
-      const playerId = (action as RemovePlayerAction).playerId
+      const playerId = (action as RemovePlayerAction).payload
       const pelada = state[(action as RemovePlayerAction).peladaId]
 
-      const newPelada = {
+      const newPelada: Pelada = {
         ...pelada,
-        player_ids: _.omit(pelada.player_ids, playerId)
+        player_ids: _.filter(pelada.player_ids, (_playerId) => playerId !== _playerId)
       }
 
-      const newState = {
+      const newState: PeladaState = {
         ...state,
         [newPelada.id]: newPelada
       }
@@ -115,12 +71,20 @@ const peladaReducer: Reducer<PeladaState> = (
 }
 
 
-export const initialize: ActionCreator<InitializePeladaAction> = (peladas: Pelada[]) => ({
-  type: '@@pelada/InitializePeladaAction',
+const peladaReducer: Reducer<PeladaState> = compose(
+  addReducer<PeladaState>('@@pelada/AddPeladaAction', initialState),
+  updateReducer<PeladaState>('@@pelada/UpdatePeladaAction', initialState),
+  removeReducer<PeladaState>('@@pelada/RemovePeladaAction', initialState),
+  setReducer<PeladaState>('@@pelada/SetPeladaAction', initialState),
+  playerReducer
+)
+
+export const setPelada = (peladas: PeladaState): SetPeladaAction => ({
+  type: '@@pelada/SetPeladaAction',
   payload: peladas
 }) 
 
-export const addPelada: ActionCreator<AddPeladaAction> = (name: string) => ({
+export const addPelada = (name: string): AddPeladaAction => ({
   type: '@@pelada/AddPeladaAction',
   payload: {
     name,
@@ -129,12 +93,12 @@ export const addPelada: ActionCreator<AddPeladaAction> = (name: string) => ({
   }
 }) 
 
-export const removePelada: ActionCreator<RemovePeladaAction> = (peladaId: number) => ({
+export const removePelada = (peladaId: number): RemovePeladaAction => ({
   type: '@@pelada/RemovePeladaAction',
   payload: peladaId
 }) 
 
-export const updatePelada: ActionCreator<UpdatePeladaAction> = (pelada: Pelada) => ({
+export const updatePelada = (pelada: Pelada): UpdatePeladaAction => ({
   type: '@@pelada/UpdatePeladaAction',
   payload: pelada
 }) 

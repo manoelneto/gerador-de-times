@@ -8,7 +8,7 @@ import { ApplicationState } from "../store";
 import { NewPeladaForm } from "./NewPeladaForm";
 import { FormApi } from 'final-form';
 import { Player, Pelada } from '../types';
-import { addPlayer, setAvailableToPlay } from '../redux/player';
+import { addPlayer, updatePlayer } from '../redux/player';
 
 const PeladaScreenHeader = ({
   navigation
@@ -51,7 +51,10 @@ const PlayerCard = ({
 
   const toogleAvailableToPlay = useCallback(
     () => {
-      dispatch(setAvailableToPlay(player.id, !player.availableToPlay))
+      dispatch(updatePlayer({
+        ...player,
+        availableToPlay: !player.availableToPlay
+      }))
     }, [player]
   )
 

@@ -63,11 +63,11 @@ const EditPlayer = ({
               validate={nameValidator}
             />
 
-            <Field
+            {/* <Field
               name='availableToPlay'
               label="Disponível para sorteio"
               component={FormCheckBoxInput}
-            />
+            /> */}
 
             <Button
               onPress={() => handleSubmit()}
