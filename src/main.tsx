@@ -12,6 +12,7 @@ import PeladaScreen from './screens/pelada';
 import { StyleSheet } from 'react-native';
 import TeamsScreen from './screens/teams';
 import EditPlayerScreen from './screens/EditPlayer';
+import EditPeladaScreen from './screens/EditPelada';
 
 interface HeaderProps {
   scene: any,
@@ -101,6 +102,7 @@ const MainStack = createStackNavigator({
   main: Main,
   pelada: PeladaScreen,
   teams: TeamsScreen,
+  editPelada: EditPeladaScreen,
   edit_player: EditPlayerScreen
 }, {
   initialRouteName: 'main',

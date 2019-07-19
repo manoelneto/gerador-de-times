@@ -17,6 +17,7 @@ export const FormTextInput = ({
   <>
     <TextInput
       {...input}
+      value={input.value ? input.value.toString(): input.value}
       label={label}
       error={meta.error && meta.touched}
     />

@@ -6,7 +6,7 @@ export interface Idable {
   id: number
 }
 
-export interface State<T extends Idable> extends Object {
+export interface State<T extends Idable> {
   [key: number]: T
 }
 
@@ -28,6 +28,7 @@ export interface ResetAction<S extends State<Idable>, Type = any> extends Action
 
 export const addReducer = <S extends State<Idable>> (type: string, initialState: S): Reducer<S> => 
   (state: S = initialState, action): S => {
+    // console.log(state, action, 1)
     if (action.type === type) {
       const payload = (action as AddAction<Idable>).payload
       return {
@@ -41,6 +42,7 @@ export const addReducer = <S extends State<Idable>> (type: string, initialState:
 
 export const updateReducer = <S extends State<Idable>> (type: string, initialState: S): Reducer<S> =>
   (state: S = initialState, action): S => {
+    // console.log(state, action, 2)
     if (action.type === type) {
       const payload = (action as UpdateAction<Idable>).payload
 
@@ -55,6 +57,7 @@ export const updateReducer = <S extends State<Idable>> (type: string, initialSta
 
 export const removeReducer = <S extends State<Idable>> (type: string, initialState: S): Reducer<S> => 
   (state: S = initialState, action): S => {
+    // console.log(state, action, 3)
     if (action.type === type) {
       const payload = (action as RemoveAction).payload
       const newState = {...state}
@@ -67,6 +70,7 @@ export const removeReducer = <S extends State<Idable>> (type: string, initialSta
 
 export const setReducer = <S extends State<Idable>> (type: string, initialState: S): Reducer<S> =>
   (state: S = initialState, action): S => {
+    // console.log(state, action, 4)
     if (action.type === type) {
       return (action as ResetAction<S>).payload
     }

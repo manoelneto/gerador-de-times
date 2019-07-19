@@ -1,4 +1,4 @@
-import { Reducer, ActionCreator, Action, compose } from "redux";
+import { Reducer, ActionCreator, Action, compose, combineReducers } from "redux";
 import { AsyncStorage } from "react-native";
 import { tsNamespaceExportDeclaration } from "@babel/types";
 import { Pelada, Player } from "../types";
@@ -6,6 +6,7 @@ import _ from "lodash";
 import { AddPlayerAction, RemovePlayerAction, addPlayer } from "./player";
 import { randId } from "../utils/randId";
 import { AddAction, RemoveAction, UpdateAction, ResetAction, addReducer, removeReducer, updateReducer, setReducer, State } from "./crud";
+import composeReducersArray from "../utils/composeReducersArray";
 
 
 export const PeladaKey = 'peladas'
@@ -48,17 +49,15 @@ const playerReducer: Reducer<PeladaState> = (
 
     case '@@player/RemovePlayerAction': {
       const playerId = (action as RemovePlayerAction).payload
-      const pelada = state[(action as RemovePlayerAction).peladaId]
+      const newState: PeladaState = _.reduce(state, (acc: PeladaState, pelada: Pelada) => {
 
-      const newPelada: Pelada = {
-        ...pelada,
-        player_ids: _.filter(pelada.player_ids, (_playerId) => playerId !== _playerId)
-      }
+        acc[pelada.id] = {
+          ...pelada,
+          player_ids: pelada.player_ids.filter(id => playerId !== id)
+        }
 
-      const newState: PeladaState = {
-        ...state,
-        [newPelada.id]: newPelada
-      }
+        return acc
+      }, {})
 
       AsyncStorage.setItem(PeladaKey, JSON.stringify(newState))
 
@@ -71,7 +70,8 @@ const playerReducer: Reducer<PeladaState> = (
 }
 
 
-const peladaReducer: Reducer<PeladaState> = compose(
+const peladaReducer: Reducer<PeladaState> = composeReducersArray(
+  initialState,
   addReducer<PeladaState>('@@pelada/AddPeladaAction', initialState),
   updateReducer<PeladaState>('@@pelada/UpdatePeladaAction', initialState),
   removeReducer<PeladaState>('@@pelada/RemovePeladaAction', initialState),

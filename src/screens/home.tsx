@@ -2,7 +2,7 @@ import { Node } from "@babel/core";
 import { Text, SafeAreaView, StyleSheet } from "react-native";
 import React, { useCallback } from "react";
 import { createBottomTabNavigator, FlatList, NavigationScreenProp, NavigationRoute, NavigationParams, withNavigation } from "react-navigation";
-import { Card, Avatar, Title, Paragraph, Button, FAB } from "react-native-paper";
+import { Card, Avatar, Title, Paragraph, Button, FAB, List, TouchableRipple } from "react-native-paper";
 import { string } from "prop-types";
 import { useDispatch, useStore, useSelector } from "react-redux";
 import { addPelada } from "../redux/pelada";
@@ -14,7 +14,7 @@ import _ from "lodash";
 import { usePlayers } from "./pelada";
 import { NewPeladaForm } from "./NewPeladaForm";
 
-const PeladaCard = ({
+const PeladaListItem = ({
   pelada,
   navigation
 }: {
@@ -22,22 +22,30 @@ const PeladaCard = ({
   navigation: NavigationScreenProp<NavigationRoute<NavigationParams>, NavigationParams>
 }) => {
   const players = usePlayers(pelada.id)
+
+  const onMorePress = useCallback(() => navigation.navigate('editPelada', {
+    id: pelada.id,
+    peladaId: navigation.getParam('id')
+  }), [])
+  
   
   return (
-    <Card
+    <List.Item
       onPress={() => navigation.navigate('pelada', { id: pelada.id, title: pelada.name })}
-      style={styles.pelada}
-    >
-      <Card.Title title={pelada.name} subtitle={`Jogadores ${players.length}`} />
-      <Card.Actions>
-        <Button>Cancel</Button>
-        <Button>Ok</Button>
-      </Card.Actions>
-    </Card>
+      title={pelada.name}
+      right={(props) => (
+        <TouchableRipple
+          onPress={onMorePress}
+        >
+          <List.Icon {...props} icon='more-vert' />
+        </TouchableRipple>
+      )}
+      description={`Jogadores ${players.length}`}
+    />
   )
 }
 
-const PeladaCardEnhanced = withNavigation(PeladaCard)
+const PeladaListItemEnhanced = withNavigation(PeladaListItem)
 
 const Home = () => {
   const peladas: Pelada[] = useSelector(
@@ -68,13 +76,14 @@ const Home = () => {
       ListHeaderComponent={
         <NewPeladaForm
           label='Nome da pelada'
+          buttonText='Adicionar Pelada'
           onSubmit={onSubmit}
         />
       }
       style={styles.homeStyle}
       data={peladas}
       keyExtractor={item => item.id.toString()}
-      renderItem={({ item }) => <PeladaCardEnhanced pelada={item} />}
+      renderItem={({ item }) => <PeladaListItemEnhanced pelada={item} />}
     />
   )
 }

@@ -150,7 +150,8 @@ const PeladaScreen = ({
     <SectionList
       ListHeaderComponent={
         <NewPeladaForm
-          label='Nome da pelada'
+          label='Nome do jogador'
+          buttonText='Adicionar Jogador'
           onSubmit={(
             { name } :
             { name: string },

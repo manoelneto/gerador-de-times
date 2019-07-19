@@ -1,11 +1,11 @@
-import { createStore, combineReducers, Reducer, Store } from "redux";
-import peladaReducer, { PeladaState, initialize as initializePelada, PeladaKey } from "./redux/pelada";
+import { createStore, combineReducers, Reducer, Store, applyMiddleware } from "redux";
+import peladaReducer, { PeladaState, PeladaKey } from "./redux/pelada";
 import { AsyncStorage } from "react-native";
-import playerReducer, { PlayerKey, initializePlayer, PlayerState } from "./redux/player";
+import playerReducer, { PlayerKey, PlayerState } from "./redux/player";
+import createSagaMiddleware from "@redux-saga/core";
+import sagas from "./sagas";
 
-const initialState = {
-  
-}
+const initialState = {}
 
 export interface ApplicationState {
   pelada: PeladaState,
@@ -17,21 +17,14 @@ const reducers: Reducer<ApplicationState> = combineReducers<ApplicationState>({
   player: playerReducer
 })
 
+const sagaMiddleware = createSagaMiddleware()
+
 const store: Store<ApplicationState> = createStore(
   reducers,
-  initialState
+  initialState,
+  applyMiddleware(sagaMiddleware)
 )
 
-// AsyncStorage.removeItem(PeladaKey)
-// AsyncStorage.removeItem(PlayerKey)
-
-AsyncStorage.getItem(PeladaKey).then(peladas => {
-  store.dispatch(initializePelada(JSON.parse(peladas || '{}')))
-})
-
-AsyncStorage.getItem(PlayerKey).then(players => {
-  store.dispatch(initializePlayer(JSON.parse(players || '{}')))
-})
-
+sagaMiddleware.run(sagas)
 
 export default store

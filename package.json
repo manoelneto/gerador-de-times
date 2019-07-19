@@ -1,5 +1,5 @@
 {
-  "name": "GeradorDeTimes",
+  "name": "com.pelada",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -19,7 +19,8 @@
     "react-native-vector-icons": "^6.6.0",
     "react-navigation": "^3.11.0",
     "react-redux": "^7.1.0",
-    "redux": "^4.0.1"
+    "redux": "^4.0.1",
+    "redux-saga": "^1.0.5"
   },
   "devDependencies": {
     "@babel/core": "^7.4.5",

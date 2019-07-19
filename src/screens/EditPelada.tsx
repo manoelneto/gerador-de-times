@@ -7,23 +7,15 @@ import React, { useCallback } from "react";
 import { Button } from "react-native-paper";
 import { useDispatch } from "react-redux";
 import { updatePlayer, removePlayer } from "../redux/player";
-import { Player } from "../types";
+import { Player, Pelada } from "../types";
 import { requiredValidator } from "../validators/requiredValidator";
-import { Alert, StyleSheet } from "react-native";
-import { numberValidator } from "../validators/numberValidator";
+import { Alert } from "react-native";
+import usePelada from "../hooks/usePelada";
+import { updatePelada, removePelada } from "../redux/pelada";
 import composeValidators from "../validators/composeValidators";
-import { minNumberValidator } from "../validators/minNumberValidator";
-import { maxNumberValidator } from "../validators/maxNumberValidator";
 
 const nameValidator = composeValidators(
   requiredValidator("Você deve informar o nome")
-)
-
-const starsValidator = composeValidators(
-  requiredValidator("Você deve informar a quantidade de estrelas"),
-  numberValidator(),
-  minNumberValidator(1),
-  maxNumberValidator(10),
 )
 
 const EditPlayer = ({
@@ -31,34 +23,35 @@ const EditPlayer = ({
 }: {
   navigation: NavigationScreenProp<NavigationRoute>
 }) => {
-  const player = usePlayer(navigation.getParam('id'))
+  const pelada = usePelada(navigation.getParam('id'))!
   const dispatch = useDispatch()
 
-  const onSubmit = useCallback((player: Player) => {
-    dispatch(updatePlayer(player))
+  const onSubmit = useCallback((pelada: Pelada) => {
+    dispatch(updatePelada(pelada))
     navigation.goBack()
   }, [])
 
-  const onRemovePlayer = useCallback(() => {
+  const onRemove = useCallback(() => {
     Alert.alert(
-      "Remover jogador", "Tem certeza que quer remover?",
+      "Remover pelada", 
+      "Tem certeza? Essa ação não pode ser desfeita",
       [{
         text: "Sim",
         onPress: () => {
-          dispatch(removePlayer(player!.id))
+          dispatch(removePelada(pelada.id))
           navigation.goBack()
         }
       }, {
         text: "Não"
       }]
     )
-  }, [player])
-
+  }, [pelada])
+  
   return (
     <ScrollView>
       <Form
         onSubmit={onSubmit}
-        initialValues={player}
+        initialValues={pelada}
         render={({ handleSubmit }) => (
           <>
             <Field
@@ -68,32 +61,18 @@ const EditPlayer = ({
               validate={nameValidator}
             />
 
-            <Field
-              name='stars'
-              label="Estrelas"
-              component={FormTextInput}
-              validate={starsValidator}
-            />
-
-            {/* <Field
-              name='availableToPlay'
-              label="Disponível para sorteio"
-              component={FormCheckBoxInput}
-            /> */}
-
             <Button
               onPress={() => handleSubmit()}
               mode='contained'
-              style={styles.updatePlayerButton}
             >
-              Atualizar jogador
+              Atualizar pelada
             </Button>
 
             <Button
               color='red'
-              onPress={onRemovePlayer}
+              onPress={onRemove}
             >
-              Remover jogador
+              Remover pelada
             </Button>
           </>
         )}
@@ -101,11 +80,5 @@ const EditPlayer = ({
     </ScrollView>
   )
 }
-
-const styles = StyleSheet.create({
-  updatePlayerButton: {
-    marginTop: 40
-  }
-})
 
 export default withNavigation(EditPlayer)

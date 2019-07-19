@@ -7,9 +7,12 @@ import { requiredValidator } from "../validators/requiredValidator";
 
 const valueValidator = requiredValidator("Você deve informar um valor")
 
-export const NewPeladaForm = ({ label, onSubmit }: {
-  label: string;
-  onSubmit: any;
+export const NewPeladaForm = ({
+  label, onSubmit, buttonText
+}: {
+  label: string
+  onSubmit: any
+  buttonText: string
 }) => {
   return (
     <Form onSubmit={onSubmit} render={({ handleSubmit }) => (
@@ -22,7 +25,7 @@ export const NewPeladaForm = ({ label, onSubmit }: {
           />
 
         <Button onPress={handleSubmit}>
-          Adicionar
+          {buttonText}
         </Button>
       </>
     )} />
