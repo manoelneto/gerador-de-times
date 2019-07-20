@@ -30,7 +30,7 @@ beforeEach(() => {
 
 describe(addReducer, () => {
   beforeEach(() => {
-    reducer = addReducer<FooState>("add", initialState)
+    reducer = addReducer<FooState>("add")
   })
 
   test("should return state with object", () => {
@@ -55,7 +55,7 @@ describe(addReducer, () => {
 
 describe(updateReducer, () => {
   beforeEach(() => {
-    reducer = updateReducer<FooState>("update", initialState)
+    reducer = updateReducer<FooState>("update")
   })
 
   test("should return state with object", () => {
@@ -81,7 +81,7 @@ describe(updateReducer, () => {
 describe(removeReducer, () => {
   let state: FooState
   beforeEach(() => {
-    reducer = removeReducer<FooState>("remove", initialState)
+    reducer = removeReducer<FooState>("remove")
     state = {
       [foo.id]: foo,
       2: foo
@@ -108,7 +108,7 @@ describe(removeReducer, () => {
 
 describe(setReducer, () => {
   beforeEach(() => {
-    reducer = setReducer('reset', initialState)
+    reducer = setReducer('reset')
   })
 
   test("should return state", () => {

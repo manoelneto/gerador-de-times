@@ -1,44 +1,14 @@
-import _ from 'lodash'
-import { Text, TextInput, Button, Card, List, TouchableRipple } from 'react-native-paper'
-import React, { useCallback, useMemo } from "react";
-import { View, StyleSheet, SectionListData, SectionList } from "react-native";
-import { NavigationScreenProp, NavigationRoute, NavigationParams, withNavigation } from "react-navigation";
-import { useSelector, useDispatch } from "react-redux";
-import { ApplicationState } from "../store";
-import { NewPeladaForm } from "./NewPeladaForm";
 import { FormApi } from 'final-form';
-import { Player, Pelada } from '../types';
+import _ from 'lodash';
+import React, { useCallback, useMemo } from "react";
+import { SectionList, SectionListData, StyleSheet } from "react-native";
+import { List, Text, TouchableRipple } from 'react-native-paper';
+import { NavigationParams, NavigationRoute, NavigationScreenProp, withNavigation } from "react-navigation";
+import { useDispatch, useSelector } from "react-redux";
 import { addPlayer, updatePlayer } from '../redux/player';
-
-const PeladaScreenHeader = ({
-  navigation
-}: {
-  navigation: NavigationScreenProp<NavigationRoute<NavigationParams>, NavigationParams>
-}) => {
-  return (
-    <View>
-      <View
-        style={{
-          flex: 1,
-          flexDirection: "row",
-          alignItems: 'center'
-        }}
-      >
-        <TextInput
-          label='Adicione Jogadores'
-          style={{
-            flex: 1
-          }}
-        />
-        <Button>
-          Ok
-        </Button>
-      </View>
-    </View>
-  )
-}
-
-const PeladaScreenHeaderEnhanced = withNavigation(PeladaScreenHeader)
+import { ApplicationState } from "../store";
+import { humanPositions, Pelada, Player } from '../types';
+import { NewPeladaForm } from "./NewPeladaForm";
 
 const PlayerCard = ({
   player,
@@ -58,7 +28,7 @@ const PlayerCard = ({
     }, [player]
   )
 
-  const onMorePress = useCallback(() => navigation.navigate('edit_player', {
+  const onMorePress = useCallback(() => navigation.navigate('editPlayer', {
     id: player.id,
     peladaId: navigation.getParam('id')
   }), [])
@@ -66,6 +36,10 @@ const PlayerCard = ({
   const description = []
   
   description.push(`${player.stars} estrelas`)
+
+  if (player.type === 'player') {
+    description.push(humanPositions[player.position])
+  }
 
   if (player.availableToPlay) {
     description.push(`Disponível para sorteio`)
@@ -83,7 +57,7 @@ const PlayerCard = ({
           <List.Icon {...props} icon='more-vert' />
         </TouchableRipple>
       )}
-      description={description.join(' - ')}
+      description={description.join(`\n`)}
     />
   )
 }
@@ -91,8 +65,12 @@ const PlayerCard = ({
 const getHumanType = (type: string): string => {
   if (type === 'goalkeeper') {
     return 'Goleiro'
-  } else if (type === 'player') {
-    return "Jogador"
+  } else if (type === 'player-defender') {
+    return "Zagueiro"
+  } if (type === 'player-midfielder') {
+    return "Meio campo"
+  }if (type === 'player-forward') {
+    return "Atacante"
   }
 
   return ''
@@ -120,6 +98,17 @@ export const usePlayers = (peladaId: number): Player[] => {
   return useSelector(playersSelector)
 }
 
+const tipos = {
+  goalkeeper: 0,
+  player: 1
+}
+
+const posicoes = {
+  defender: 0,
+  midfielder: 0,
+  forward: 2
+}
+
 const PeladaScreen = ({
   navigation
 }: {
@@ -129,9 +118,22 @@ const PeladaScreen = ({
   const players: Player[] = usePlayers(navigation.getParam('id'))
 
   const playersGroupedByType: SectionListData<Player>[] = useMemo(() => {
+    const sortedPlayers = players.sort((player1, player2) => {
+      let result = tipos[player1.type] - tipos[player2.type]
+      // let result = (tipos[player1.type] * 10 + posicoes[player1.position]) - (tipos[player2.type] * 10 + posicoes[player2.position])
+
+      if (result === 0) {
+        result = player1.name < player2.name ? -1 : 1
+      }
+
+      return result
+    })
+
     return _.map(
       _.toPairs(
-        _.groupBy(players, player => player.type)
+        _.groupBy(sortedPlayers, player => (
+          player.type === 'goalkeeper' ? player.type : `${player.type}-${player.position}`
+        ))
       ),
       ([ type, players ]) => ({
         title: getHumanType(type),

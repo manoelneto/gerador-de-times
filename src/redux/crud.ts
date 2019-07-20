@@ -26,53 +26,54 @@ export interface ResetAction<S extends State<Idable>, Type = any> extends Action
   payload: S
 }
 
-export const addReducer = <S extends State<Idable>> (type: string, initialState: S): Reducer<S> => 
-  (state: S = initialState, action): S => {
+export const addReducer = <S extends State<Idable>> (type: string): Reducer<S> => 
+  (state, action): S => {
     // console.log(state, action, 1)
     if (action.type === type) {
       const payload = (action as AddAction<Idable>).payload
       return {
-        ...state,
+        ...state!,
         [payload.id]: payload
       }
     }
 
-    return state
+    return state!
   }
 
-export const updateReducer = <S extends State<Idable>> (type: string, initialState: S): Reducer<S> =>
-  (state: S = initialState, action): S => {
+export const updateReducer = <S extends State<Idable>> (type: string): Reducer<S> =>
+  (state, action): S => {
     // console.log(state, action, 2)
     if (action.type === type) {
       const payload = (action as UpdateAction<Idable>).payload
 
       return {
-        ...state,
+        ...state!,
         [payload.id]: payload
       }
     }
 
-    return state
+    return state!
   }
 
-export const removeReducer = <S extends State<Idable>> (type: string, initialState: S): Reducer<S> => 
-  (state: S = initialState, action): S => {
+export const removeReducer = <S extends State<Idable>> (type: string): Reducer<S> => 
+  (state, action): S => {
     // console.log(state, action, 3)
     if (action.type === type) {
       const payload = (action as RemoveAction).payload
-      const newState = {...state}
+      const newState = {...state!}
       delete newState[payload]
       return newState
     }
 
-    return state
+    return state!
   }
 
-export const setReducer = <S extends State<Idable>> (type: string, initialState: S): Reducer<S> =>
-  (state: S = initialState, action): S => {
+export const setReducer = <S extends State<Idable>> (type: string): Reducer<S> =>
+  (state, action): S => {
     // console.log(state, action, 4)
     if (action.type === type) {
       return (action as ResetAction<S>).payload
     }
-    return state
+
+    return state!
   }

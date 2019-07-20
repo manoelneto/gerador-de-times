@@ -42,8 +42,6 @@ const playerReducer: Reducer<PeladaState> = (
         [newPelada.id]: newPelada
       }
 
-      AsyncStorage.setItem(PeladaKey, JSON.stringify(newState))
-
       return newState
     }
 
@@ -59,8 +57,6 @@ const playerReducer: Reducer<PeladaState> = (
         return acc
       }, {})
 
-      AsyncStorage.setItem(PeladaKey, JSON.stringify(newState))
-
       return newState
     }
 
@@ -72,10 +68,10 @@ const playerReducer: Reducer<PeladaState> = (
 
 const peladaReducer: Reducer<PeladaState> = composeReducersArray(
   initialState,
-  addReducer<PeladaState>('@@pelada/AddPeladaAction', initialState),
-  updateReducer<PeladaState>('@@pelada/UpdatePeladaAction', initialState),
-  removeReducer<PeladaState>('@@pelada/RemovePeladaAction', initialState),
-  setReducer<PeladaState>('@@pelada/SetPeladaAction', initialState),
+  addReducer<PeladaState>('@@pelada/AddPeladaAction'),
+  updateReducer<PeladaState>('@@pelada/UpdatePeladaAction'),
+  removeReducer<PeladaState>('@@pelada/RemovePeladaAction'),
+  setReducer<PeladaState>('@@pelada/SetPeladaAction'),
   playerReducer
 )
 
@@ -89,7 +85,8 @@ export const addPelada = (name: string): AddPeladaAction => ({
   payload: {
     name,
     id: randId(),
-    player_ids: []
+    player_ids: [],
+    teamPlayersCount: 5
   }
 }) 
 

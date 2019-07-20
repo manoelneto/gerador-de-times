@@ -7,12 +7,11 @@ import { Appbar, Drawer, Button, Text, TouchableRipple } from 'react-native-pape
 import { NavigationParams } from 'react-navigation';
 import { NavigationScreenProp } from 'react-navigation';
 import { NavigationRoute } from 'react-navigation';
-import Settings from './screens/settings';
+import PeladaSettings from './screens/PeladaSettings';
 import PeladaScreen from './screens/pelada';
 import { StyleSheet } from 'react-native';
 import TeamsScreen from './screens/teams';
 import EditPlayerScreen from './screens/EditPlayer';
-import EditPeladaScreen from './screens/EditPelada';
 
 interface HeaderProps {
   scene: any,
@@ -45,41 +44,37 @@ class Header extends PureComponent<HeaderProps> {
   }
 }
 
-const Main = createBottomTabNavigator({
-  home: {
-    screen: Home,
+const PeladaNavigation = createBottomTabNavigator({
+  peladaMain: {
+    screen: PeladaScreen,
     navigationOptions: {
       tabBarLabel: 'Início'
     }
   },
-  settings: {
-    screen: Settings,
+  peladaSettings: {
+    screen: PeladaSettings,
     navigationOptions: {
       tabBarLabel: 'Configurações'
     }
   }
 }, {
-  initialRouteName: 'home'
+  initialRouteName: 'peladaMain'
 })
 
-
-Main.navigationOptions = (
+PeladaNavigation.navigationOptions = (
   {
     navigation
   }: {
-    navigation: NavigationScreenProp<NavigationState, NavigationParams>
+    navigation: NavigationScreenProp<NavigationState>
   }
 ) => {
   const { routeName } = navigation.state.routes[navigation.state.index]
 
-  let headerTitle = 'Geador de Times'
+  let headerTitle = 'Pelada'
 
   switch (routeName) {
-    case 'home':
-      headerTitle = 'Gerador de Times'
-      break;
 
-    case 'settings':
+    case 'peladaSettings':
       headerTitle = 'Configurações'
       break;
   
@@ -98,12 +93,23 @@ Main.navigationOptions = (
   }
 }
 
+const PeladaNavigationWithProps = ({
+  navigation
+}: {
+  navigation: NavigationScreenProp<NavigationState>
+}) => (
+  <PeladaNavigation
+    navigation={navigation}
+  />
+)
+
+PeladaNavigationWithProps.router = PeladaNavigation.router
+
 const MainStack = createStackNavigator({
-  main: Main,
-  pelada: PeladaScreen,
+  main: Home,
+  pelada: PeladaNavigationWithProps,
   teams: TeamsScreen,
-  editPelada: EditPeladaScreen,
-  edit_player: EditPlayerScreen
+  editPlayer: EditPlayerScreen
 }, {
   initialRouteName: 'main',
   defaultNavigationOptions: ({ navigation }) => {

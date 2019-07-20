@@ -27,10 +27,10 @@ const initialState: PlayerState = {}
 
 const playerReducer: Reducer<PlayerState> = composeReducersArray(
   initialState,
-  addReducer<PlayerState>('@@player/AddPlayerAction', initialState),
-  updateReducer<PlayerState>('@@player/UpdatePlayerAction', initialState),
-  removeReducer<PlayerState>('@@player/RemovePlayerAction', initialState),
-  setReducer<PlayerState>('@@player/SetPlayerAction', initialState)
+  addReducer<PlayerState>('@@player/AddPlayerAction'),
+  updateReducer<PlayerState>('@@player/UpdatePlayerAction'),
+  removeReducer<PlayerState>('@@player/RemovePlayerAction'),
+  setReducer<PlayerState>('@@player/SetPlayerAction')
 )
 
 export const setPlayer = (players: PlayerState): SetPlayerAction => ({
@@ -45,7 +45,8 @@ export const addPlayer = (peladaId: number, name: string): AddPlayerAction => ({
     id: randId(),
     stars: 5,
     availableToPlay: true,
-    type: 'player'
+    type: 'player',
+    position: 'defender'
   },
   peladaId
 })

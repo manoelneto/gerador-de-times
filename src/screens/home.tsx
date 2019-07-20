@@ -22,24 +22,12 @@ const PeladaListItem = ({
   navigation: NavigationScreenProp<NavigationRoute<NavigationParams>, NavigationParams>
 }) => {
   const players = usePlayers(pelada.id)
+  
 
-  const onMorePress = useCallback(() => navigation.navigate('editPelada', {
-    id: pelada.id,
-    peladaId: navigation.getParam('id')
-  }), [])
-  
-  
   return (
     <List.Item
       onPress={() => navigation.navigate('pelada', { id: pelada.id, title: pelada.name })}
       title={pelada.name}
-      right={(props) => (
-        <TouchableRipple
-          onPress={onMorePress}
-        >
-          <List.Icon {...props} icon='more-vert' />
-        </TouchableRipple>
-      )}
       description={`Jogadores ${players.length}`}
     />
   )
@@ -80,7 +68,6 @@ const Home = () => {
           onSubmit={onSubmit}
         />
       }
-      style={styles.homeStyle}
       data={peladas}
       keyExtractor={item => item.id.toString()}
       renderItem={({ item }) => <PeladaListItemEnhanced pelada={item} />}
@@ -90,7 +77,6 @@ const Home = () => {
 
 const styles = StyleSheet.create({
   contentContainerStyle: {
-    padding: 10,
     paddingBottom: 0
   },
   homeStyle: {

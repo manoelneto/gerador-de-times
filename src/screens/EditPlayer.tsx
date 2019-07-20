@@ -9,11 +9,24 @@ import { useDispatch } from "react-redux";
 import { updatePlayer, removePlayer } from "../redux/player";
 import { Player } from "../types";
 import { requiredValidator } from "../validators/requiredValidator";
-import { Alert, StyleSheet } from "react-native";
+import { Alert, StyleSheet, Picker } from "react-native";
 import { numberValidator } from "../validators/numberValidator";
 import composeValidators from "../validators/composeValidators";
 import { minNumberValidator } from "../validators/minNumberValidator";
 import { maxNumberValidator } from "../validators/maxNumberValidator";
+import { PickerInput, createPicker } from "./PickerInput";
+import { any } from "prop-types";
+
+const PlayerTypePicker = createPicker([
+  ['player', 'Jogador'],
+  ['goalkeeper', 'Goleiro'],
+])
+
+const PlayerPositionPicker = createPicker([
+  ['defender', 'Zagueiro'],
+  ['midfielder', 'Meio Campo'],
+  ['forward', 'Atacante'],
+])
 
 const nameValidator = composeValidators(
   requiredValidator("Você deve informar o nome")
@@ -54,12 +67,21 @@ const EditPlayer = ({
     )
   }, [player])
 
+  const handleCancel = useCallback(() => {
+    navigation.goBack()
+  }, [])
+
+  // quando o jogador é deletado, o player fica null
+  if (!player) {
+    return null
+  }
+
   return (
     <ScrollView>
       <Form
         onSubmit={onSubmit}
         initialValues={player}
-        render={({ handleSubmit }) => (
+        render={({ handleSubmit, values: { type } }) => (
           <>
             <Field
               name='name'
@@ -75,18 +97,33 @@ const EditPlayer = ({
               validate={starsValidator}
             />
 
-            {/* <Field
-              name='availableToPlay'
-              label="Disponível para sorteio"
-              component={FormCheckBoxInput}
-            /> */}
+            <Field
+              name='type'
+              label="Tipo"
+              render={PlayerTypePicker}
+            />
+
+            {type === 'player' && (
+              <Field
+                name='position'
+                label="Posição"
+                render={PlayerPositionPicker}
+              />
+            )}
 
             <Button
-              onPress={() => handleSubmit()}
+              onPress={handleSubmit}
               mode='contained'
               style={styles.updatePlayerButton}
             >
               Atualizar jogador
+            </Button>
+
+            <Button
+              onPress={handleCancel}
+              color='black'
+            >
+              Cancelar
             </Button>
 
             <Button

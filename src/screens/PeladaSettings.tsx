@@ -1,24 +1,31 @@
-import { withNavigation, NavigationScreenProp, ScrollView } from "react-navigation";
-import { NavigationRoute } from "react-navigation";
-import usePlayer from "../hooks/use-player";
-import { Form, Field } from "react-final-form";
-import { FormTextInput } from "./FormTextInput";
 import React, { useCallback } from "react";
-import { Button } from "react-native-paper";
-import { useDispatch } from "react-redux";
-import { updatePlayer, removePlayer } from "../redux/player";
-import { Player, Pelada } from "../types";
-import { requiredValidator } from "../validators/requiredValidator";
+import { Field, Form } from "react-final-form";
 import { Alert } from "react-native";
+import { Button } from "react-native-paper";
+import { NavigationRoute, NavigationScreenProp, ScrollView, withNavigation } from "react-navigation";
+import { useDispatch } from "react-redux";
 import usePelada from "../hooks/usePelada";
-import { updatePelada, removePelada } from "../redux/pelada";
+import { removePelada, updatePelada } from "../redux/pelada";
+import { Pelada } from "../types";
 import composeValidators from "../validators/composeValidators";
+import { requiredValidator } from "../validators/requiredValidator";
+import { FormTextInput } from "./FormTextInput";
+import { numberValidator } from "../validators/numberValidator";
+import { minNumberValidator } from "../validators/minNumberValidator";
+import { maxNumberValidator } from "../validators/maxNumberValidator";
 
 const nameValidator = composeValidators(
   requiredValidator("Você deve informar o nome")
 )
 
-const EditPlayer = ({
+const teamPlayersCountValidator = composeValidators(
+  requiredValidator("Você deve informar a quantidade de jogadores na linha"),
+  numberValidator(),
+  minNumberValidator(1),
+  maxNumberValidator(10),
+)
+
+const PeladaSettings = ({
   navigation
 }: {
   navigation: NavigationScreenProp<NavigationRoute>
@@ -61,6 +68,13 @@ const EditPlayer = ({
               validate={nameValidator}
             />
 
+            <Field
+              name='teamPlayersCount'
+              label="Quantidade de jogadores na linha"
+              component={FormTextInput}
+              validate={teamPlayersCountValidator}
+            />
+
             <Button
               onPress={() => handleSubmit()}
               mode='contained'
@@ -81,4 +95,4 @@ const EditPlayer = ({
   )
 }
 
-export default withNavigation(EditPlayer)
+export default withNavigation(PeladaSettings)
