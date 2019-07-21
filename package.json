@@ -5,6 +5,7 @@
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "iphone5s": "node node_modules/react-native/local-cli/cli.js run-ios --simulator=\"iPhone 5s\"",
+    "android": "node node_modules/react-native/local-cli/cli.js run-android",
     "test": "jest",
     "test:watch": "jest --watch"
   },
