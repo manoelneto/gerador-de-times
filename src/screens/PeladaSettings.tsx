@@ -13,16 +13,27 @@ import { FormTextInput } from "./FormTextInput";
 import { numberValidator } from "../validators/numberValidator";
 import { minNumberValidator } from "../validators/minNumberValidator";
 import { maxNumberValidator } from "../validators/maxNumberValidator";
+import { createPicker } from "./PickerInput";
+
+const PeladaTeamPlayersCountPicker = createPicker([
+  [1, "1"],
+  [2, "2"],
+  [3, "3"],
+  [4, "4"],
+  [5, "5"],
+  [6, "6"],
+  [7, "7"],
+  [8, "8"],
+  [9, "9"],
+  [10, "10"],
+])
 
 const nameValidator = composeValidators(
   requiredValidator("Você deve informar o nome")
 )
 
 const teamPlayersCountValidator = composeValidators(
-  requiredValidator("Você deve informar a quantidade de jogadores na linha"),
-  numberValidator(),
-  minNumberValidator(1),
-  maxNumberValidator(10),
+  requiredValidator("Você deve informar a quantidade de jogadores na linha")
 )
 
 const PeladaSettings = ({
@@ -71,10 +82,10 @@ const PeladaSettings = ({
             <Field
               name='teamPlayersCount'
               label="Quantidade de jogadores na linha"
-              component={FormTextInput}
+              component={PeladaTeamPlayersCountPicker}
               validate={teamPlayersCountValidator}
             />
-
+            
             <Button
               onPress={() => handleSubmit()}
               mode='contained'

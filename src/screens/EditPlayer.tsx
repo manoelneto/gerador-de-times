@@ -1,21 +1,19 @@
-import { withNavigation, NavigationScreenProp, ScrollView } from "react-navigation";
-import { NavigationRoute } from "react-navigation";
-import usePlayer from "../hooks/use-player";
-import { Form, Field } from "react-final-form";
-import { FormTextInput } from "./FormTextInput";
 import React, { useCallback } from "react";
+import { Field, Form } from "react-final-form";
+import { Alert, StyleSheet } from "react-native";
 import { Button } from "react-native-paper";
+import { NavigationRoute, NavigationScreenProp, ScrollView, withNavigation } from "react-navigation";
 import { useDispatch } from "react-redux";
-import { updatePlayer, removePlayer } from "../redux/player";
+import usePlayer from "../hooks/use-player";
+import { removePlayer, updatePlayer } from "../redux/player";
 import { Player } from "../types";
-import { requiredValidator } from "../validators/requiredValidator";
-import { Alert, StyleSheet, Picker } from "react-native";
-import { numberValidator } from "../validators/numberValidator";
 import composeValidators from "../validators/composeValidators";
-import { minNumberValidator } from "../validators/minNumberValidator";
 import { maxNumberValidator } from "../validators/maxNumberValidator";
-import { PickerInput, createPicker } from "./PickerInput";
-import { any } from "prop-types";
+import { minNumberValidator } from "../validators/minNumberValidator";
+import { numberValidator } from "../validators/numberValidator";
+import { requiredValidator } from "../validators/requiredValidator";
+import { FormTextInput } from "./FormTextInput";
+import { createPicker } from "./PickerInput";
 
 const PlayerTypePicker = createPicker([
   ['goalkeeper', 'Goleiro'],
@@ -26,6 +24,10 @@ const PlayerTypePicker = createPicker([
 
 const nameValidator = composeValidators(
   requiredValidator("Você deve informar o nome")
+)
+
+const typeValidator = composeValidators(
+  requiredValidator("Você deve informar o tipo")
 )
 
 const starsValidator = composeValidators(
@@ -97,6 +99,7 @@ const EditPlayer = ({
               name='type'
               label="Tipo"
               render={PlayerTypePicker}
+              validate={typeValidator}
             />
 
             <Button
