@@ -12,6 +12,7 @@ import PeladaScreen from './screens/pelada';
 import { StyleSheet } from 'react-native';
 import TeamsScreen from './screens/teams';
 import EditPlayerScreen from './screens/EditPlayer';
+import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons'
 
 interface HeaderProps {
   scene: any,
@@ -65,9 +66,28 @@ const PeladaNavigation = createBottomTabNavigator({
   }
 }, {
   initialRouteName: 'peladaMain',
-  tabBarOptions: {
-    showIcon: false
-  }
+  defaultNavigationOptions: ({ navigation }) => ({
+    tabBarIcon: ({ focused, horizontal, tintColor }) => {
+      const { routeName } = navigation.state
+      let iconName: string
+
+      if (routeName === 'peladaMain') {
+        iconName = `home${focused ? '' : '-outline'}`
+      } else if (routeName === 'peladaTeam') {
+        iconName = `account-multiple${focused ? '' : '-outline'}`
+      } else if (routeName === 'peladaSettings') {
+        iconName = `settings${focused ? '' : '-outline'}`
+      }
+
+      return (
+        <MaterialCommunityIcon
+          name={iconName!}
+          size={horizontal ? 20 : 25}
+          color={tintColor!}
+        />
+      )
+    }
+  })
 })
 
 PeladaNavigation.navigationOptions = (
