@@ -17,7 +17,8 @@ import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIc
 interface HeaderProps {
   scene: any,
   navigation: NavigationScreenProp<NavigationRoute<NavigationParams>, NavigationParams>,
-  headerRight?: JSX.Element
+  headerRight?: JSX.Element,
+  showBack?: boolean
 }
 
 class Header extends PureComponent<HeaderProps> {
@@ -25,12 +26,15 @@ class Header extends PureComponent<HeaderProps> {
     const {
       scene,
       navigation,
-      headerRight
+      headerRight,
+      showBack
     } = this.props
 
     return (
       <Appbar.Header>
-        <Appbar.BackAction onPress={() => navigation.goBack()} />
+        {showBack && (
+          <Appbar.BackAction onPress={() => navigation.goBack()} />
+        )}
 
         <Appbar.Content
           title={
@@ -139,52 +143,31 @@ const PeladaNavigationWithProps = ({
 PeladaNavigationWithProps.router = PeladaNavigation.router
 
 const MainStack = createStackNavigator({
-  main: Home,
+  main: {
+    screen: Home,
+    navigationOptions: ({
+      navigation
+    }: {
+      navigation: NavigationScreenProp<NavigationState>
+    }) => ({
+      headerTitle: 'Home',
+      header: (props: any) => <Header {...props} navigation={navigation}  />
+    })
+  },
   pelada: PeladaNavigationWithProps,
   teams: TeamsScreen,
   editPlayer: EditPlayerScreen
 }, {
   initialRouteName: 'main',
   defaultNavigationOptions: ({ navigation }) => {
-    const routeName = navigation.state.routeName
-    let headerRight : JSX.Element | undefined = undefined
-
-    switch (routeName) {
-      case 'pelada':
-        headerRight = (
-          <TouchableRipple
-            onPress={() => {
-              navigation.navigate(
-                "peladaTeam", {
-                  id: navigation.getParam('id')
-                }
-              )
-            }}
-          >
-            <Text style={styles.topRightText}>
-              Gerar
-            </Text>
-          </TouchableRipple>
-        )
-        break;
-    
-      default:
-        break;
-    }
-    
     return {
       header: props => (
-        <Header {...props} navigation={navigation} headerRight={headerRight} />
+        <Header {...props} navigation={navigation} showBack />
       )
     }
   }
 })
 
-const styles = StyleSheet.create({
-  topRightText: {
-    color: 'white'
-  }
-})
 
 const NavigationWithContainer = createAppContainer(MainStack)
 

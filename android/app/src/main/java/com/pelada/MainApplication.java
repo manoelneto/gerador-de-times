@@ -1,4 +1,4 @@
-package com.geradordetimes;
+package com.pelada;
 
 import android.app.Application;
 

@@ -10,9 +10,6 @@ import { Pelada } from "../types";
 import composeValidators from "../validators/composeValidators";
 import { requiredValidator } from "../validators/requiredValidator";
 import { FormTextInput } from "./FormTextInput";
-import { numberValidator } from "../validators/numberValidator";
-import { minNumberValidator } from "../validators/minNumberValidator";
-import { maxNumberValidator } from "../validators/maxNumberValidator";
 import { createPicker } from "./PickerInput";
 
 const PeladaTeamPlayersCountPicker = createPicker([

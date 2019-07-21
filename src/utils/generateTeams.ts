@@ -1,5 +1,20 @@
 import { Player, Team, Pelada, playerTypes } from "../types";
-import { apply } from "redux-saga/effects";
+
+// uma tentativa de randomizar mais de uma vez
+const rand = (): number => {
+  const aux = []
+  let randNumber: number = 0
+
+  for (let index = 0; index < 10; index++) {
+    aux.push(Math.random())
+  }
+
+  while (aux.length >= 1) {
+    randNumber = Math.random() === 0.5 ? aux.pop()! : aux.shift()!
+  }
+
+  return randNumber
+}
 
 const isGoleiro = (player: Player) => player.type === 'goalkeeper'
 const isNotGoleiro = (player: Player) => !isGoleiro(player)
@@ -54,7 +69,7 @@ export const generateTeams = (players: Player[], pelada: Pelada): Team[] => {
     })
   }
 
-  goalkeppers.sort(() => 0.5 - Math.random()).forEach(
+  goalkeppers.sort(() => 0.5 - rand()).forEach(
     (goalkepper, index) => teams[index].players.push(goalkepper)
   )
 
@@ -69,14 +84,14 @@ export const generateTeams = (players: Player[], pelada: Pelada): Team[] => {
       const bPeso = b.stars || 5
 
       if (aPeso === bPeso) {
-        return 0.5 - Math.random()
+        return 0.5 - rand()
       } else {
         return bPeso - aPeso
       }
   }).forEach(player => {
     const availableTeams = getAvailableTeams(teams, linePlayers.length, maxLinePlayersPerTeam)
 
-    availableTeams[ Math.floor(Math.random() * availableTeams.length) ].players.push(player)
+    availableTeams[ Math.floor(rand() * availableTeams.length) ].players.push(player)
   })
 
   return teams

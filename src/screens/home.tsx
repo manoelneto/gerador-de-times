@@ -1,5 +1,5 @@
 import { Node } from "@babel/core";
-import { Text, SafeAreaView, StyleSheet } from "react-native";
+import { Text, SafeAreaView, StyleSheet, View } from "react-native";
 import React, { useCallback } from "react";
 import { createBottomTabNavigator, FlatList, NavigationScreenProp, NavigationRoute, NavigationParams, withNavigation } from "react-navigation";
 import { Card, Avatar, Title, Paragraph, Button, FAB, List, TouchableRipple } from "react-native-paper";
@@ -29,6 +29,11 @@ const PeladaListItem = ({
       onPress={() => navigation.navigate('pelada', { id: pelada.id, title: pelada.name })}
       title={pelada.name}
       description={`Jogadores ${players.length}`}
+      right={() => (
+        <View style={{ justifyContent: 'center' }}>
+          <List.Icon icon='keyboard-arrow-right' color="blue" />
+        </View>
+      )}
     />
   )
 }

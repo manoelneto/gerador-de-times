@@ -10,9 +10,11 @@ import { generateLottery } from "../redux/lottery";
 import useLotteryFromPelada from "../hooks/useLotteryFromPelada";
 
 const GenerateTeam = ({
-  peladaId
+  peladaId,
+  again
 }: {
-  peladaId: number
+  peladaId: number,
+  again: boolean
 }) => {
   const dispatch = useDispatch()
   const onShuffle = useCallback(() => {
@@ -27,7 +29,7 @@ const GenerateTeam = ({
         marginVertical: 10
       }}
     >
-      Sortear
+      {again ? 'Sortear Novamente' : 'Sortear'}
     </Button>
   )
 }
@@ -73,7 +75,7 @@ const TeamsScreen = ({
       renderSectionHeader={SectionHeader}
       keyExtractor={(item: Player) => item.id.toString()}
       ListHeaderComponent={
-        <GenerateTeam peladaId={navigation.getParam('id')} />
+        <GenerateTeam peladaId={navigation.getParam('id')} again={!!lottery} />
       }
       renderItem={
         ({

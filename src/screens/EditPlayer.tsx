@@ -8,12 +8,22 @@ import usePlayer from "../hooks/use-player";
 import { removePlayer, updatePlayer } from "../redux/player";
 import { Player } from "../types";
 import composeValidators from "../validators/composeValidators";
-import { maxNumberValidator } from "../validators/maxNumberValidator";
-import { minNumberValidator } from "../validators/minNumberValidator";
-import { numberValidator } from "../validators/numberValidator";
 import { requiredValidator } from "../validators/requiredValidator";
 import { FormTextInput } from "./FormTextInput";
 import { createPicker } from "./PickerInput";
+
+const PlayerStarsPicker = createPicker([
+  [1, "1"],
+  [2, "2"],
+  [3, "3"],
+  [4, "4"],
+  [5, "5"],
+  [6, "6"],
+  [7, "7"],
+  [8, "8"],
+  [9, "9"],
+  [10, "10"],
+])
 
 const PlayerTypePicker = createPicker([
   ['goalkeeper', 'Goleiro'],
@@ -31,10 +41,7 @@ const typeValidator = composeValidators(
 )
 
 const starsValidator = composeValidators(
-  requiredValidator("Você deve informar a quantidade de estrelas"),
-  numberValidator(),
-  minNumberValidator(1),
-  maxNumberValidator(10),
+  requiredValidator("Você deve informar a quantidade de estrelas")
 )
 
 const EditPlayer = ({
@@ -91,7 +98,7 @@ const EditPlayer = ({
             <Field
               name='stars'
               label="Estrelas"
-              component={FormTextInput}
+              component={PlayerStarsPicker}
               validate={starsValidator}
             />
 

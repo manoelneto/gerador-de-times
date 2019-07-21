@@ -42,22 +42,22 @@ export const PickerInput = ({
   );
 }
 
+const styles = StyleSheet.create({
+  picker: {
+    fontSize: 16,
+    paddingTop: 13,
+    paddingHorizontal: 10,
+    paddingBottom: 12,
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 4,
+    backgroundColor: 'white',
+    color: 'black',
+  },
+});
+
 export const createPicker = (options: Options[]) => 
   (props: any) => 
     <PickerInput {...props} options={options} />
-    
 
-    const styles = StyleSheet.create({
-      picker: {
-        fontSize: 16,
-        paddingTop: 13,
-        paddingHorizontal: 10,
-        paddingBottom: 12,
-        borderWidth: 1,
-        borderColor: 'gray',
-        borderRadius: 4,
-        backgroundColor: 'white',
-        color: 'black',
-      },
-    });
     
