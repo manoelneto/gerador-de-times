@@ -1,4 +1,4 @@
-import { Player } from "../types";
+import { Player, playerStars } from "../types";
 import { Reducer, Action, ActionCreator, compose } from "redux";
 import { AsyncStorage } from "react-native";
 import { randId } from "../utils/randId";
@@ -38,14 +38,14 @@ export const setPlayer = (players: PlayerState): SetPlayerAction => ({
   payload: players
 })
 
-export const addPlayer = (peladaId: number, name: string): AddPlayerAction => ({
+export const addPlayer = (peladaId: number, name: string, type = "defender", stars: playerStars = 5, availableToPlay = true): AddPlayerAction => ({
   type: '@@player/AddPlayerAction',
   payload: {
     name,
     id: randId(),
-    stars: 5,
-    availableToPlay: true,
-    type: 'defender'
+    stars,
+    availableToPlay,
+    type
   },
   peladaId
 })

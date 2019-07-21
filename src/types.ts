@@ -8,6 +8,8 @@ export const humanPositions = {
 
 export type playerType = 'goalkeeper' | 'defender' | 'midfielder' | 'forward'
 
+export type playerStars = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10
+
 export const playerTypes: playerType[] = [
   "goalkeeper",
   "defender",
@@ -18,7 +20,7 @@ export const playerTypes: playerType[] = [
 export interface Player extends Idable {
   name: string
   type: playerType
-  stars: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10
+  stars: playerStars
   availableToPlay: boolean
 }
 
