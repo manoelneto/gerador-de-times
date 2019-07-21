@@ -1,14 +1,16 @@
 import { FormApi } from 'final-form';
 import _ from 'lodash';
 import React, { useCallback, useMemo } from "react";
-import { SectionList, SectionListData, StyleSheet } from "react-native";
-import { List, Text, TouchableRipple } from 'react-native-paper';
+import { SectionList, SectionListData } from "react-native";
+import { List, TouchableRipple } from 'react-native-paper';
 import { NavigationParams, NavigationRoute, NavigationScreenProp, withNavigation } from "react-navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { addPlayer, updatePlayer } from '../redux/player';
 import { ApplicationState } from "../store";
-import { humanPositions, Pelada, Player } from '../types';
+import { Pelada, Player, playerType, playerTypes } from '../types';
 import { NewPeladaForm } from "./NewPeladaForm";
+import { SectionHeader } from './SectionHeader';
+import { getHumanType } from './getHumanType';
 
 const PlayerCard = ({
   player,
@@ -37,10 +39,6 @@ const PlayerCard = ({
   
   description.push(`${player.stars} estrelas`)
 
-  if (player.type === 'player') {
-    description.push(humanPositions[player.position])
-  }
-
   if (player.availableToPlay) {
     description.push(`Disponível para sorteio`)
   }
@@ -62,18 +60,13 @@ const PlayerCard = ({
   )
 }
 
-const getHumanType = (type: string): string => {
-  if (type === 'goalkeeper') {
-    return 'Goleiro'
-  } else if (type === 'player-defender') {
-    return "Zagueiro"
-  } if (type === 'player-midfielder') {
-    return "Meio campo"
-  }if (type === 'player-forward') {
-    return "Atacante"
-  }
+const getHumanTypeSelected = (type: string, players: Player[]): string => {
+  const result = [
+    getHumanType(type),
+    `${players.filter(p => p.type === type && p.availableToPlay).length} marcados para sorteiro`
+  ]
 
-  return ''
+  return result.join(' - ')
 }
 
 const usePelada = (peladaId: number): Pelada | undefined => {
@@ -98,17 +91,6 @@ export const usePlayers = (peladaId: number): Player[] => {
   return useSelector(playersSelector)
 }
 
-const tipos = {
-  goalkeeper: 0,
-  player: 1
-}
-
-const posicoes = {
-  defender: 0,
-  midfielder: 0,
-  forward: 2
-}
-
 const PeladaScreen = ({
   navigation
 }: {
@@ -119,8 +101,7 @@ const PeladaScreen = ({
 
   const playersGroupedByType: SectionListData<Player>[] = useMemo(() => {
     const sortedPlayers = players.sort((player1, player2) => {
-      let result = tipos[player1.type] - tipos[player2.type]
-      // let result = (tipos[player1.type] * 10 + posicoes[player1.position]) - (tipos[player2.type] * 10 + posicoes[player2.position])
+      let result = playerTypes.indexOf(player1.type) - playerTypes.indexOf(player2.type)
 
       if (result === 0) {
         result = player1.name < player2.name ? -1 : 1
@@ -131,12 +112,10 @@ const PeladaScreen = ({
 
     return _.map(
       _.toPairs(
-        _.groupBy(sortedPlayers, player => (
-          player.type === 'goalkeeper' ? player.type : `${player.type}-${player.position}`
-        ))
+        _.groupBy(sortedPlayers, player => player.type)
       ),
       ([ type, players ]) => ({
-        title: getHumanType(type),
+        title: getHumanTypeSelected(type, players),
         data: players
       })
     )
@@ -168,14 +147,7 @@ const PeladaScreen = ({
           }}
         />
       }
-      renderSectionHeader={(
-        { section } :
-        {
-          section: SectionListData<Player>
-        }
-      ) => (
-        <Text style={styles.section}>{section.title}</Text>
-      )}
+      renderSectionHeader={SectionHeader}
       sections={playersGroupedByType}
       keyExtractor={(item: Player) => item.id.toString()}
       renderItem={
@@ -188,17 +160,5 @@ const PeladaScreen = ({
     />
   )
 }
-
-const styles = StyleSheet.create({
-  player: {
-    marginBottom: 5
-  },
-  section: {
-    fontWeight: 'bold',
-    backgroundColor: 'black',
-    color: 'white',
-    padding: 3
-  }
-})
 
 export default withNavigation(PeladaScreen)

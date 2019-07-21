@@ -6,7 +6,7 @@ export interface Idable {
   id: number
 }
 
-export interface State<T extends Idable> {
+export interface State<T extends Idable> extends Object {
   [key: number]: T
 }
 

@@ -4,17 +4,20 @@ import { AsyncStorage } from "react-native";
 import playerReducer, { PlayerKey, PlayerState } from "./redux/player";
 import createSagaMiddleware from "@redux-saga/core";
 import sagas from "./sagas";
+import lotteryReducer, { LotteryState } from "./redux/lottery";
 
 const initialState = {}
 
 export interface ApplicationState {
   pelada: PeladaState,
-  player: PlayerState
+  player: PlayerState,
+  lottery: LotteryState
 }
 
 const reducers: Reducer<ApplicationState> = combineReducers<ApplicationState>({
   pelada: peladaReducer,
-  player: playerReducer
+  player: playerReducer,
+  lottery: lotteryReducer
 })
 
 const sagaMiddleware = createSagaMiddleware()

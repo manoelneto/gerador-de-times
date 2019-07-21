@@ -45,8 +45,7 @@ export const addPlayer = (peladaId: number, name: string): AddPlayerAction => ({
     id: randId(),
     stars: 5,
     availableToPlay: true,
-    type: 'player',
-    position: 'defender'
+    type: 'defender'
   },
   peladaId
 })

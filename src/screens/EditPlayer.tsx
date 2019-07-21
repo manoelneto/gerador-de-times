@@ -18,11 +18,7 @@ import { PickerInput, createPicker } from "./PickerInput";
 import { any } from "prop-types";
 
 const PlayerTypePicker = createPicker([
-  ['player', 'Jogador'],
   ['goalkeeper', 'Goleiro'],
-])
-
-const PlayerPositionPicker = createPicker([
   ['defender', 'Zagueiro'],
   ['midfielder', 'Meio Campo'],
   ['forward', 'Atacante'],
@@ -102,14 +98,6 @@ const EditPlayer = ({
               label="Tipo"
               render={PlayerTypePicker}
             />
-
-            {type === 'player' && (
-              <Field
-                name='position'
-                label="Posição"
-                render={PlayerPositionPicker}
-              />
-            )}
 
             <Button
               onPress={handleSubmit}

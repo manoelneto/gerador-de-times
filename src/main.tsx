@@ -56,9 +56,18 @@ const PeladaNavigation = createBottomTabNavigator({
     navigationOptions: {
       tabBarLabel: 'Configurações'
     }
+  },
+  peladaTeam: {
+    screen: TeamsScreen,
+    navigationOptions: {
+      tabBarLabel: 'Gerar'
+    }
   }
 }, {
-  initialRouteName: 'peladaMain'
+  initialRouteName: 'peladaMain',
+  tabBarOptions: {
+    showIcon: false
+  }
 })
 
 PeladaNavigation.navigationOptions = (
@@ -76,6 +85,10 @@ PeladaNavigation.navigationOptions = (
 
     case 'peladaSettings':
       headerTitle = 'Configurações'
+      break;
+
+    case 'peladaTeam':
+      headerTitle = 'Gerar Time'
       break;
   
     default:
@@ -121,7 +134,11 @@ const MainStack = createStackNavigator({
         headerRight = (
           <TouchableRipple
             onPress={() => {
-              navigation.navigate("teams")
+              navigation.navigate(
+                "peladaTeam", {
+                  id: navigation.getParam('id')
+                }
+              )
             }}
           >
             <Text style={styles.topRightText}>
