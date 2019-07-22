@@ -71,6 +71,7 @@ const TeamsScreen = ({
   
   return (
     <SectionList
+      keyboardShouldPersistTaps='handled'
       sections={sections}
       renderSectionHeader={SectionHeader}
       keyExtractor={(item: Player) => item.id.toString()}

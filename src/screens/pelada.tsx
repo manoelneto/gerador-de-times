@@ -129,6 +129,7 @@ const PeladaScreen = ({
 
   return (
     <SectionList
+      keyboardShouldPersistTaps='handled'
       ListHeaderComponent={
         <NewPeladaForm
           label='Nome do jogador'

@@ -64,7 +64,8 @@ const Home = () => {
   }, [])
 
   return (
-    <FlatList<Pelada>
+    <FlatList
+      keyboardShouldPersistTaps='handled'
       contentContainerStyle={styles.contentContainerStyle}
       ListHeaderComponent={
         <NewPeladaForm
