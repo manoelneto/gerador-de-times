@@ -38,7 +38,7 @@ const PeladaSettings = ({
 }: {
   navigation: NavigationScreenProp<NavigationRoute>
 }) => {
-  const pelada = usePelada(navigation.getParam('id'))!
+  const pelada = usePelada(navigation.getParam('id'))
   const dispatch = useDispatch()
 
   const onSubmit = useCallback((pelada: Pelada) => {
@@ -53,14 +53,18 @@ const PeladaSettings = ({
       [{
         text: "Sim",
         onPress: () => {
-          dispatch(removePelada(pelada.id))
-          navigation.goBack()
+          dispatch(removePelada(pelada!.id))
+          navigation.navigate('main')
         }
       }, {
         text: "Não"
       }]
     )
   }, [pelada])
+
+  if (!pelada) {
+    return null
+  }
   
   return (
     <ScrollView>
