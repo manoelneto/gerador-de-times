@@ -63,7 +63,7 @@ const PlayerCard = ({
 const getHumanTypeSelected = (type: string, players: Player[]): string => {
   const result = [
     getHumanType(type),
-    `${players.filter(p => p.type === type && p.availableToPlay).length} marcados para sorteiro`
+    `${players.filter(p => p.type === type && p.availableToPlay).length} marcados para sorteio`
   ]
 
   return result.join(' - ')
